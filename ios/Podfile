@@ -1,10 +1,10 @@
-# Uncomment this line to define a global platform for your project
 platform :ios, '14.0'
 use_modular_headers!
 
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+# Disable CocoaPods analytics to reduce build latency
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-#pod 'GoogleSignIn', '7.1'
+
+# Define project configurations
 project 'Runner', {
   'Debug' => :debug,
   'Profile' => :release,
@@ -12,18 +12,24 @@ project 'Runner', {
 }
 
 def flutter_root
+  # Use CodeMagic's FLUTTER_ROOT if available
+  if ENV['FLUTTER_ROOT']
+    return ENV['FLUTTER_ROOT']
+  end
+
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
   unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+    raise "#{generated_xcode_build_settings_path} must exist. Run `flutter pub get` to generate it."
   end
 
   File.foreach(generated_xcode_build_settings_path) do |line|
     matches = line.match(/FLUTTER_ROOT\=(.*)/)
     return matches[1].strip if matches
   end
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run `flutter pub get`"
 end
 
+# Require Flutter's podhelper
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
 flutter_ios_podfile_setup
@@ -31,6 +37,9 @@ flutter_ios_podfile_setup
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
+
+  # Add dependencies here
+  # pod 'GoogleSignIn', '~> 7.1'  # Uncomment if needed
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
@@ -42,8 +51,8 @@ post_install do |installer|
       config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
-      #config.build_settings['ARCHS[sdk=iphonesimulator*]'] = 'x86_64'
-      #config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+      config.build_settings['ARCHS[sdk=iphonesimulator*]'] = 'x86_64 arm64'
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+    end
   end
-end
 end

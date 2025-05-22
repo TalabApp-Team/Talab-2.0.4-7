@@ -1,4 +1,3 @@
-
 import 'dart:ui' as ui;
 
 import 'package:Talab/app/app_theme.dart';
@@ -39,220 +38,133 @@ class ContactUsState extends State<ContactUs> {
       }
     });
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.color.backgroundColor,
-      appBar: UiUtils.buildAppBar(
-        context,
-        title: "contactUs".translate(context),
-        showBackButton: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF6B46C1),
+        title: Text('Support', style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: BlocBuilder<CompanyCubit, CompanyState>(
-        builder: (context, state) {
-          if (state is CompanyFetchProgress) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is CompanyFetchSuccess) {
-            final companyData = state.companyData;
-            return Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(
-                    "howCanWeHelp".translate(context),
-                    color: context.color.textColorDark,
-                    fontSize: context.font.larger,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  const SizedBox(height: 10),
-                  CustomText(
-                    "itLooksLikeYouHasError".translate(context),
-                    fontSize: context.font.small,
-                    color: context.color.textLightColor,
-                  ),
-                  const SizedBox(height: 15),
-                  customTile(
-                    context,
-                    title: "callBtnLbl".translate(context),
-                    svgImagePath: AppIcons.call,
-                    onTap: () => _showCallDialog(context, companyData),
-                    showWhatsApp: true, // Enable WhatsApp icon
-                    onWhatsAppTap: () async {
-                      final whatsappNumber = '6238440943';
-                      final message = Uri.encodeComponent("Hi");
-                      final url = Uri.parse("https://wa.me/$whatsappNumber?text=$message");
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url, mode: LaunchMode.externalApplication);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  customTile(
-                    context,
-                    title: "companyEmailLbl".translate(context),
-                    svgImagePath: AppIcons.message,
-                    onTap: () => _showEmailDialog(context, companyData.companyEmail ?? ''),
-                  ),
-                ],
-              ),
-            );
-          } else if (state is CompanyFetchFailure) {
-            return Center(child: CustomText(state.errmsg));
-          } else {
-            return const SizedBox.shrink();
-          }
-        },
-      ),
-    );
-  }
-
-  void _showCallDialog(BuildContext context, Company companyData) {
-    final number1 = companyData.companyTel1;
-    final number2 = companyData.companyTel2;
-
-    UiUtils.showBlurredDialoge(
-      context,
-      dialoge: BlurredDialogBox(
-        title: "chooseNumber".translate(context),
-        showCancelButton: false,
-        barrierDismissible: true,
-        acceptTextColor: context.color.buttonColor,
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              title: CustomText(
-                number1.toString(),
-                textAlign: TextAlign.center,
-              ),
-              onTap: () async {
-                await launchUrl(Uri.parse("tel:$number1"));
-              },
-            ),
-            if (number2 != null)
-              ListTile(
-                title: CustomText(
-                  number2.toString(),
-                  textAlign: TextAlign.center,
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16.0), // Increased padding for height
+                child: ListTile(
+                  leading: Icon(Icons.email, color: Color(0xFF6B46C1)),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Customer', style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: () => _launchEmail('support@talab.qa', context),
+                        child: Text('support@talab.qa', style: TextStyle(color: Colors.black87)),
+                      ),
+                      SizedBox(height: 12), // Space between entries
+                      Text('Merchant', style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: () => _launchEmail('sellersupport@talab.qa', context),
+                        child: Text('sellersupport@talab.qa', style: TextStyle(color: Colors.black87)),
+                      ),
+                    ],
+                  ),
                 ),
-                onTap: () async {
-                  await launchUrl(Uri.parse("tel:$number2"));
-                },
               ),
+            ),
+            SizedBox(height: 10),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: Icon(Icons.phone, color: Color(0xFF6B46C1)),
+                title: Text('Hotline', style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text('+974 7061 6051', style: TextStyle(color: Colors.black87)),
+                trailing: GestureDetector(
+                  onTap: () => _launchWhatsApp('+97470616051'),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      UiUtils.getSvg(
+                        AppIcons.whatsappPng,
+                        width: 20,
+                        height: 20,
+                        color: Color(0xFF6B46C1),
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Chat',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () => _launchPhone('+97470616051', context),
+              ),
+            ),
+            SizedBox(height: 10),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                leading: Icon(Icons.language, color: Color(0xFF6B46C1)),
+                title: Text('Website', style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text('talab.qa', style: TextStyle(color: Colors.black87)),
+                onTap: () => _launchURL('https://talab.qa', context),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  void _showEmailDialog(BuildContext context, String email) {
-    Navigator.push(
-      context,
-      BlurredRouter(
-        builder: (context) => EmailSendWidget(email: email),
-      ),
-    );
+  void _launchEmail(String email, BuildContext context) async {
+    final Uri emailUri = Uri(scheme: 'mailto', path: email);
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch email')));
+    }
   }
 
-  Widget customTile(
-    BuildContext context, {
-    required String title,
-    required String svgImagePath,
-    bool? isSwitchBox,
-    Function(dynamic value)? onTapSwitch,
-    dynamic switchValue,
-    required VoidCallback onTap,
-    bool showWhatsApp = false, // New parameter to show WhatsApp icon
-    VoidCallback? onWhatsAppTap, // Callback for WhatsApp tap
-  }) {
-    return Row(
-      children: [
-        // Left side: Icon and Title (for the main tap action)
-        Expanded(
-          child: GestureDetector(
-            onTap: onTap,
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: context.color.territoryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.none,
-                    child: UiUtils.getSvg(
-                      svgImagePath,
-                      color: context.color.territoryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 25),
-                CustomText(
-                  title,
-                  fontWeight: FontWeight.w700,
-                  color: context.color.textColorDark,
-                ),
-              ],
-            ),
-          ),
-        ),
-        // Right side: Either WhatsApp icon or default arrow/switch
-        if (showWhatsApp && onWhatsAppTap != null)
-          GestureDetector(
-            onTap: onWhatsAppTap,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                UiUtils.getSvg(
-                  AppIcons.whatsappPng, // Use WhatsApp icon
-                  width: 20,
-                  height: 20,
-                  color: context.color.territoryColor,
-                ),
-                const SizedBox(width: 5),
-                CustomText(
-                  "Chat", // Label as per the previous implementation
-                  fontWeight: FontWeight.w700,
-                  color: context.color.textColorDark,
-                ),
-              ],
-            ),
-          )
-        else if (isSwitchBox != true)
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              border: Border.all(color: context.color.borderColor, width: 1.5),
-              color: context.color.secondaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: FittedBox(
-              fit: BoxFit.none,
-              child: SizedBox(
-                width: 8,
-                height: 15,
-                child: UiUtils.getSvg(
-                  AppIcons.arrowRight,
-                  color: context.color.textColorDark,
-                ),
-              ),
-            ),
-          ),
-        if (isSwitchBox ?? false)
-          Switch(
-            value: switchValue ?? false,
-            onChanged: (value) {
-              onTapSwitch?.call(value);
-            },
-          ),
-      ],
-    );
+  void _launchPhone(String phone, BuildContext context) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch phone')));
+    }
+  }
+
+  void _launchWhatsApp(String phone) async {
+    final Uri whatsappUri = Uri.parse('https://wa.me/$phone?text=Hi');
+    if (await canLaunchUrl(whatsappUri)) {
+      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _launchURL(String url, BuildContext context) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch website')));
+    }
   }
 }
 

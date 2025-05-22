@@ -38,9 +38,10 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # Add dependencies here
-  # pod 'GoogleSignIn', '~> 7.1'  # Uncomment if needed
+  # Add Stripe dependencies
+  pod 'StripePayments', '~> 23.18.0'  # Align with stripe_ios requirement
   pod 'StripePaymentSheet', '~> 23.18.0'  # Align with stripe_ios requirement
+  # pod 'GoogleSignIn', '~> 7.1'  # Uncomment if needed
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end

@@ -79,41 +79,49 @@ class _SliderWidgetState extends State<SliderWidget>
   }
 
   // Custom Dot Indicator
-  Widget _buildDotIndicator(int totalPages, int currentPage) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(totalPages, (index) {
-        return Container(
-          width: 10,
-          height: 10,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: index == currentPage 
-              ? Theme.of(context).primaryColor 
-              : Colors.grey.shade300,
-          ),
-        );
-      }),
-    );
-  }
+ Widget _buildDotIndicator(int totalPages, int currentPage, double screenWidth) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: List.generate(totalPages, (index) {
+      return Container(
+        width: screenWidth * 0.025, // 2.5% of screen width
+        height: screenWidth * 0.025,
+        margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.01), // 1% of screen width
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: index == currentPage 
+            ? Theme.of(context).primaryColor 
+            : Colors.grey.shade300,
+        ),
+      );
+    }),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
 
-    return BlocConsumer<SliderCubit, SliderState>(
-      listener: (context, state) {
-        if (state is SliderFetchFailure && !state.isUserDeactivated) {
-          // Optional error handling
-        }
-      },
-      builder: (context, state) {
-        if (state is SliderFetchSuccess && state.sliderlist.isNotEmpty) {
-          return Column(
-            children: [
-              SizedBox(
-                height: 200, // Increased height for more modern look
+
+@override
+Widget build(BuildContext context) {
+  super.build(context);
+
+  // Get screen dimensions for responsive sizing
+  final screenHeight = MediaQuery.of(context).size.height;
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  return BlocConsumer<SliderCubit, SliderState>(
+    listener: (context, state) {
+      if (state is SliderFetchFailure && !state.isUserDeactivated) {
+        // Optional error handling
+      }
+    },
+    builder: (context, state) {
+      if (state is SliderFetchSuccess && state.sliderlist.isNotEmpty) {
+        return Column(
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9, // Standard banner aspect ratio
+              child: SizedBox(
+                height: screenHeight * 0.35, // Increased for prominence
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: state.sliderlist.length,
@@ -130,41 +138,50 @@ class _SliderWidgetState extends State<SliderWidget>
                         double value = 0.0;
                         if (_pageController.position.haveDimensions) {
                           value = index - (_pageController.page ?? 0);
-                          value = (value * 0.038).clamp(-1, 1);
+                          value = (value * 0.05).clamp(-1, 1); // Smoother transitions
                         }
 
                         return Transform(
                           transform: Matrix4.identity()
-                            ..setEntry(3, 2, 0.001)
-                            ..rotateY(math.pi * value)
-                            ..scale(1 - value.abs() * 0.15),
+                            ..setEntry(3, 2, 0.002) // Enhanced 3D effect
+                            ..rotateY(math.pi * value * 0.5) // Subtle 3D flip
+                            ..scale(1 - value.abs() * 0.1), // Reduced scaling for elegance
                           alignment: Alignment.center,
                           child: GestureDetector(
                             onTap: () {
-                              // Navigation logic from original widget
                               _handleSliderItemTap(context, state.sliderlist[index]);
                             },
                             child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.015), // 1.5% of screen width
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15), // More rounded corners
+                                borderRadius: BorderRadius.circular(screenWidth * 0.05), // Responsive rounded edges
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  )
+                                    color: Colors.black.withOpacity(0.15 + value.abs() * 0.05),
+                                    blurRadius: screenWidth * 0.03,
+                                    spreadRadius: screenWidth * 0.005,
+                                    offset: Offset(0, screenWidth * 0.015),
+                                  ),
                                 ],
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: CachedNetworkImage(
-                                  imageUrl: state.sliderlist[index].image ?? "",
-                                  fit: BoxFit.fill,
-                                  placeholder: (context, url) => 
-                                    const Center(child: CircularProgressIndicator()),
-                                  errorWidget: (context, url, error) => 
-                                    const Icon(Icons.error),
+                                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                                child: Transform.translate(
+                                  offset: Offset(value * 20, 0), // Parallax effect
+                                  child: CachedNetworkImage(
+                                    imageUrl: state.sliderlist[index].image ?? "",
+                                    fit: BoxFit.contain, // Image contained within container
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) => const Icon(
+                                      Icons.error,
+                                      color: Colors.redAccent,
+                                      size: 40,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -175,19 +192,20 @@ class _SliderWidgetState extends State<SliderWidget>
                   },
                 ),
               ),
-              const SizedBox(height: 16),
-              // Custom dot indicator
-              _buildDotIndicator(state.sliderlist.length, _currentPage),
-            ],
-          );
-        } else if (state is SliderFetchInProgress) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
-    );
-  }
+            ),
+            SizedBox(height: screenHeight * 0.025), // 2.5% of screen height
+            // Custom dot indicator with responsive sizes
+            _buildDotIndicator(state.sliderlist.length, _currentPage, screenWidth),
+          ],
+        );
+      } else if (state is SliderFetchInProgress) {
+        return const Center(child: CircularProgressIndicator());
+      } else {
+        return const SizedBox.shrink();
+      }
+    },
+  );
+}
 
   // Method to handle slider item tap (extracted from original widget)
   void _handleSliderItemTap(BuildContext context, dynamic sliderItem) async {

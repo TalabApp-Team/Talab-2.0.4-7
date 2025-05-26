@@ -66,8 +66,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:photo_view/photo_view.dart';
 
 class AdDetailsScreen extends StatefulWidget {
   final ItemModel? model;

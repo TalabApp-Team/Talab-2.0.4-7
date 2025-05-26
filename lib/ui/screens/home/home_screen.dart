@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:Talab/ui/screens/settings/contact_us.dart';
-import 'package:animate_do/animate_do.dart';
+import 'package:Talab/utils/app_icon.dart';
 
 import 'package:Talab/data/cubits/category/fetch_category_cubit.dart';
 import 'package:Talab/data/cubits/chat/blocked_users_list_cubit.dart';
@@ -12,26 +12,17 @@ import 'package:Talab/data/cubits/home/fetch_home_all_items_cubit.dart';
 import 'package:Talab/data/cubits/home/fetch_home_screen_cubit.dart';
 import 'package:Talab/data/cubits/slider_cubit.dart';
 import 'package:Talab/data/cubits/system/fetch_system_settings_cubit.dart';
-import 'package:Talab/data/cubits/system/get_api_keys_cubit.dart';
 import 'package:Talab/data/helper/designs.dart';
-import 'package:Talab/data/model/home/home_screen_section.dart';
 import 'package:Talab/data/model/item/item_model.dart';
 import 'package:Talab/data/model/system_settings_model.dart';
 import 'package:Talab/ui/screens/ad_banner_screen.dart';
 import 'package:Talab/ui/screens/home/slider_widget.dart';
 import 'package:Talab/ui/screens/home/widgets/category_widget_home.dart';
-import 'package:Talab/ui/screens/home/widgets/grid_list_adapter.dart';
 import 'package:Talab/ui/screens/home/widgets/home_search.dart';
 import 'package:Talab/ui/screens/home/widgets/home_sections_adapter.dart';
 import 'package:Talab/ui/screens/home/widgets/home_shimmers.dart';
-import 'package:Talab/ui/screens/home/widgets/location_widget.dart';
-import 'package:Talab/ui/screens/widgets/errors/no_internet.dart';
-import 'package:Talab/ui/screens/widgets/errors/something_went_wrong.dart';
 import 'package:Talab/ui/screens/widgets/shimmerLoadingContainer.dart';
 import 'package:Talab/ui/theme/theme.dart';
-//import 'package:uni_links/uni_links.dart';
-
-import 'package:Talab/utils/api.dart';
 import 'package:Talab/utils/constant.dart';
 import 'package:Talab/utils/extensions/extensions.dart';
 import 'package:Talab/utils/hive_utils.dart';
@@ -55,17 +46,13 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin<HomeScreen> {
-  //
   @override
   bool get wantKeepAlive => true;
 
-  //
   List<ItemModel> itemLocalList = [];
 
-  //
   bool isCategoryEmpty = false;
 
-  //
   late final ScrollController _scrollController = ScrollController();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
@@ -77,29 +64,27 @@ class HomeScreenState extends State<HomeScreen>
     addPageScrollListener();
     notificationPermissionChecker();
     LocalAwesomeNotification().init(context);
-    ///////////////////////////////////////
     NotificationService.init(context);
-    context.read<SliderCubit>().fetchSlider(
-          context,
-        );
+    context.read<SliderCubit>().fetchSlider(context);
     context.read<FetchCategoryCubit>().fetchCategories();
     context.read<FetchHomeScreenCubit>().fetch(
-        city: HiveUtils.getCityName(),
-        areaId: HiveUtils.getAreaId(),
-        country: HiveUtils.getCountryName(),
-        state: HiveUtils.getStateName());
+          city: HiveUtils.getCityName(),
+          areaId: HiveUtils.getAreaId(),
+          country: HiveUtils.getCountryName(),
+          state: HiveUtils.getStateName(),
+        );
     context.read<FetchHomeAllItemsCubit>().fetch(
-        city: HiveUtils.getCityName(),
-        areaId: HiveUtils.getAreaId(),
-        radius: HiveUtils.getNearbyRadius(), // Convert double to int
-        longitude: HiveUtils.getLongitude(),
-        latitude: HiveUtils.getLatitude(),
-        country: HiveUtils.getCountryName(),
-        state: HiveUtils.getStateName());
+          city: HiveUtils.getCityName(),
+          areaId: HiveUtils.getAreaId(),
+          radius: HiveUtils.getNearbyRadius(),
+          longitude: HiveUtils.getLongitude(),
+          latitude: HiveUtils.getLatitude(),
+          country: HiveUtils.getCountryName(),
+          state: HiveUtils.getStateName(),
+        );
 
     if (HiveUtils.isUserAuthenticated()) {
       context.read<FavoriteCubit>().getFavorite();
-      //fetchApiKeys();
       context.read<GetBuyerChatListCubit>().fetch();
       context.read<BlockedUsersListCubit>().blockedUsersList();
     }
@@ -123,6 +108,7 @@ class HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -136,11 +122,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   void addPageScrollListener() {
-    //homeScreenController.addListener(pageScrollListener);
-  }
-
-  void fetchApiKeys() {
-    context.read<GetApiKeysCubit>().fetch();
+    // Placeholder for future scroll listener logic if needed
   }
 
   @override
@@ -148,19 +130,23 @@ class HomeScreenState extends State<HomeScreen>
     super.build(context);
     return SafeArea(
       child: Scaffold(
-        // In your HomeScreen's build method, replace the current AppBar with this:
-
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: const Color.fromARGB(0, 0, 0, 0),
+          backgroundColor: Colors.transparent,
           actions: [
-            IconButton(
-              icon: Icon(Icons.headset_mic_outlined, color: Colors.black),
-              onPressed: () {
-                Navigator.push(context,
-                    ContactUs.route(RouteSettings(name: '/contact-us')));
-              },
-            ),
+           TextButton.icon(
+  onPressed: () {
+    Navigator.push(
+      context,
+      ContactUs.route(RouteSettings(name: '/contact-us')),
+    );
+  },
+  label: Text('Customer Support', style: TextStyle(color: Colors.black)),
+  icon: Icon(Icons.headset_mic_outlined, color: Colors.black),
+  
+),
+
+
           ],
         ),
         backgroundColor: context.color.primaryColor,
@@ -168,23 +154,23 @@ class HomeScreenState extends State<HomeScreen>
           key: _refreshIndicatorKey,
           color: context.color.territoryColor,
           onRefresh: () async {
-            context.read<SliderCubit>().fetchSlider(
-                  context,
-                );
+            context.read<SliderCubit>().fetchSlider(context);
             context.read<FetchCategoryCubit>().fetchCategories();
             context.read<FetchHomeScreenCubit>().fetch(
-                city: HiveUtils.getCityName(),
-                areaId: HiveUtils.getAreaId(),
-                country: HiveUtils.getCountryName(),
-                state: HiveUtils.getStateName());
+                  city: HiveUtils.getCityName(),
+                  areaId: HiveUtils.getAreaId(),
+                  country: HiveUtils.getCountryName(),
+                  state: HiveUtils.getStateName(),
+                );
             context.read<FetchHomeAllItemsCubit>().fetch(
-                city: HiveUtils.getCityName(),
-                areaId: HiveUtils.getAreaId(),
-                radius: HiveUtils.getNearbyRadius(),
-                longitude: HiveUtils.getLongitude(),
-                latitude: HiveUtils.getLatitude(),
-                country: HiveUtils.getCountryName(),
-                state: HiveUtils.getStateName());
+                  city: HiveUtils.getCityName(),
+                  areaId: HiveUtils.getAreaId(),
+                  radius: HiveUtils.getNearbyRadius(),
+                  longitude: HiveUtils.getLongitude(),
+                  latitude: HiveUtils.getLatitude(),
+                  country: HiveUtils.getCountryName(),
+                  state: HiveUtils.getStateName(),
+                );
           },
           child: SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
@@ -203,43 +189,82 @@ class HomeScreenState extends State<HomeScreen>
                           const HomeSearchField(),
                           const SliderWidget(),
                           const CategoryWidgetHome(),
-                          ...List.generate(state.sections.length, (index) {
-                            HomeScreenSection section = state.sections[index];
-                            if (state.sections.isNotEmpty) {
-                              return HomeSectionsAdapter(
+                          ...state.sections.map((section) => HomeSectionsAdapter(
                                 section: section,
-                              );
-                            } else {
-                              return SizedBox.shrink();
-                            }
-                          }),
+                              )).toList(),
                           if (state.sections.isNotEmpty &&
-                              Constant.isGoogleBannerAdsEnabled == "1") ...[
+                              Constant.isGoogleBannerAdsEnabled == "1")
                             Container(
                               padding: EdgeInsets.only(top: 5),
                               margin: EdgeInsets.symmetric(vertical: 10),
-                              child:
-                                  AdBannerWidget(), // Custom widget for banner ad
+                              child: AdBannerWidget(),
                             )
-                          ] else ...[
-                            SizedBox(
-                              height: 10,
-                            )
-                          ],
+                          else
+                            SizedBox(height: 10),
                         ],
                       );
                     }
-
                     if (state is FetchHomeScreenFail) {
-                      print('hey bro ${state.error}');
+                      return Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            UiUtils.getSvg(
+                              AppIcons.somethingWentWrong,
+                              width: 80,
+                              height: 80,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              state.error.contains("internet")
+                                  ? "noInternet".translate(context)
+                                  : "errorLoadingSections".translate(context),
+                              style: TextStyle(
+                                fontSize: context.font.large,
+                                color: context.color.textDefaultColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                context.read<FetchHomeScreenCubit>().fetch(
+                                      city: HiveUtils.getCityName(),
+                                      areaId: HiveUtils.getAreaId(),
+                                      country: HiveUtils.getCountryName(),
+                                      state: HiveUtils.getStateName(),
+                                    );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: context.color.secondaryColor,
+                                backgroundColor: context.color.territoryColor,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                "retry".translate(context),
+                                style: TextStyle(
+                                  fontSize: context.font.normal,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     }
                     return SizedBox.shrink();
                   },
                 ),
                 const AllItemsWidget(),
-                const SizedBox(
-                  height: 30,
-                )
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -262,17 +287,13 @@ class HomeScreenState extends State<HomeScreen>
               borderRadius: BorderRadius.all(Radius.circular(10)),
               child: CustomShimmer(height: 52, width: double.maxFinite),
             ),
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
             ClipRRect(
               clipBehavior: Clip.antiAliasWithSaveLayer,
               borderRadius: BorderRadius.all(Radius.circular(10)),
               child: CustomShimmer(height: 170, width: double.maxFinite),
             ),
-            SizedBox(
-              height: 12,
-            ),
+            SizedBox(height: 12),
             Container(
               height: 100,
               child: ListView.builder(
@@ -294,17 +315,13 @@ class HomeScreenState extends State<HomeScreen>
                             width: 66,
                           ),
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                        SizedBox(height: 5),
                         CustomShimmer(
                           height: 10,
                           width: 48,
                         ),
-                        const SizedBox(
-                          height: 2,
-                        ),
-                        const CustomShimmer(
+                        SizedBox(height: 2),
+                        CustomShimmer(
                           height: 10,
                           width: 60,
                         ),
@@ -314,9 +331,7 @@ class HomeScreenState extends State<HomeScreen>
                 },
               ),
             ),
-            const SizedBox(
-              height: 18,
-            ),
+            SizedBox(height: 18),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -324,10 +339,6 @@ class HomeScreenState extends State<HomeScreen>
                   height: 20,
                   width: 150,
                 ),
-                /* CustomShimmer(
-                  height: 20,
-                  width: 50,
-                ),*/
               ],
             ),
             Container(
@@ -353,24 +364,18 @@ class HomeScreenState extends State<HomeScreen>
                             width: 250,
                           ),
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
+                        SizedBox(height: 8),
                         CustomShimmer(
                           height: 15,
                           width: 90,
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        const CustomShimmer(
+                        SizedBox(height: 8),
+                        CustomShimmer(
                           height: 14,
                           width: 230,
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        const CustomShimmer(
+                        SizedBox(height: 8),
+                        CustomShimmer(
                           height: 14,
                           width: 200,
                         ),
@@ -397,23 +402,17 @@ class HomeScreenState extends State<HomeScreen>
                           height: 147,
                         ),
                       ),
-                      const SizedBox(
-                        height: 8,
-                      ),
+                      SizedBox(height: 8),
                       CustomShimmer(
                         height: 15,
                         width: 70,
                       ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      const CustomShimmer(
+                      SizedBox(height: 8),
+                      CustomShimmer(
                         height: 14,
                       ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      const CustomShimmer(
+                      SizedBox(height: 8),
+                      CustomShimmer(
                         height: 14,
                         width: 130,
                       ),
@@ -422,10 +421,9 @@ class HomeScreenState extends State<HomeScreen>
                 },
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   mainAxisExtent: 215,
-                  crossAxisCount: 2, // Single column grid
+                  crossAxisCount: 2,
                   mainAxisSpacing: 15.0,
                   crossAxisSpacing: 15.0,
-                  // You may adjust this aspect ratio as needed
                 ),
               ),
             ),
@@ -467,11 +465,10 @@ class AllItemsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // 🔹 Title with Padding
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Text(
-          "All Items", // 🏷️ Title for the section
+          "All Items",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -486,17 +483,16 @@ class AllItemsWidget extends StatelessWidget {
               return Column(
                 children: [
                   GridView.builder(
-                    physics:
-                        NeverScrollableScrollPhysics(), // Prevents nested scrolling issues
-                    shrinkWrap: true, // Ensures it takes only necessary space
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).size.width > 600
                           ? 3
-                          : 2, // Responsive layout
+                          : 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.75, // Adjusts height
+                      childAspectRatio: 0.75,
                     ),
                     itemCount: state.items.length,
                     itemBuilder: (context, index) {
@@ -517,9 +513,7 @@ class AllItemsWidget extends StatelessWidget {
           if (state is FetchHomeAllItemsFail) {
             return Center(child: Text("Something went wrong"));
           }
-          return Center(
-              child:
-                  CircularProgressIndicator()); // Show loading indicator initially
+          return Center(child: CircularProgressIndicator());
         },
       )
     ]);

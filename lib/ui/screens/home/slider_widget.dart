@@ -107,7 +107,8 @@ Widget build(BuildContext context) {
   // Get screen dimensions for responsive sizing
   final screenHeight = MediaQuery.of(context).size.height;
   final screenWidth = MediaQuery.of(context).size.width;
-
+  final isTablet     = screenWidth >= 600 && screenWidth <= 1200;
+  final sliderAspectRatio = isTablet ? 4 / 3 : 16 / 9;
   return BlocConsumer<SliderCubit, SliderState>(
     listener: (context, state) {
       if (state is SliderFetchFailure && !state.isUserDeactivated) {
@@ -119,7 +120,7 @@ Widget build(BuildContext context) {
         return Column(
           children: [
             AspectRatio(
-              aspectRatio: 16 / 9, // Standard banner aspect ratio
+              aspectRatio: sliderAspectRatio, // Standard banner aspect ratio
               child: SizedBox(
                 height: screenHeight * 0.35, // Increased for prominence
                 child: PageView.builder(

@@ -38,12 +38,13 @@ class ContactUsState extends State<ContactUs> {
       }
     });
   }
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFE3F2FD),
       appBar: AppBar(
-        backgroundColor: Color(0xFF6B46C1),
+        backgroundColor: Color(0xFF42A5F5),
         title: Text('Support', style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -59,9 +60,9 @@ class ContactUsState extends State<ContactUs> {
               elevation: 2,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16.0), // Increased padding for height
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ListTile(
-                  leading: Icon(Icons.email, color: Color(0xFF6B46C1)),
+                  leading: Icon(Icons.email, color: Color(0xFF42A5F5)),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -70,13 +71,6 @@ class ContactUsState extends State<ContactUs> {
                       GestureDetector(
                         onTap: () => _launchEmail('support@talab.qa', context),
                         child: Text('support@talab.qa', style: TextStyle(color: Colors.black87)),
-                      ),
-                      SizedBox(height: 12), // Space between entries
-                      Text('Merchant', style: TextStyle(fontWeight: FontWeight.bold)),
-                      SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: () => _launchEmail('sellersupport@talab.qa', context),
-                        child: Text('sellersupport@talab.qa', style: TextStyle(color: Colors.black87)),
                       ),
                     ],
                   ),
@@ -88,7 +82,7 @@ class ContactUsState extends State<ContactUs> {
               elevation: 2,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ListTile(
-                leading: Icon(Icons.phone, color: Color(0xFF6B46C1)),
+                leading: Icon(Icons.phone, color: Color(0xFF42A5F5)),
                 title: Text('Hotline', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text('+974 7061 6051', style: TextStyle(color: Colors.black87)),
                 trailing: GestureDetector(
@@ -100,7 +94,7 @@ class ContactUsState extends State<ContactUs> {
                         AppIcons.whatsappPng,
                         width: 20,
                         height: 20,
-                        color: Color(0xFF6B46C1),
+                        color: Color(0xFF42A5F5),
                       ),
                       SizedBox(width: 5),
                       Text(
@@ -121,7 +115,7 @@ class ContactUsState extends State<ContactUs> {
               elevation: 2,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: ListTile(
-                leading: Icon(Icons.language, color: Color(0xFF6B46C1)),
+                leading: Icon(Icons.language, color: Color(0xFF42A5F5)),
                 title: Text('Website', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text('talab.qa', style: TextStyle(color: Colors.black87)),
                 onTap: () => _launchURL('https://talab.qa', context),
@@ -165,118 +159,5 @@ class ContactUsState extends State<ContactUs> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch website')));
     }
-  }
-}
-
-class EmailSendWidget extends StatefulWidget {
-  final String email;
-
-  const EmailSendWidget({Key? key, required this.email}) : super(key: key);
-
-  @override
-  State<EmailSendWidget> createState() => _EmailSendWidgetState();
-}
-
-class _EmailSendWidgetState extends State<EmailSendWidget> {
-  final TextEditingController _subject = TextEditingController();
-  late final TextEditingController _email = TextEditingController(text: widget.email);
-  final TextEditingController _text = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.0),
-      body: Center(
-        child: Container(
-          clipBehavior: Clip.antiAlias,
-          width: MediaQuery.of(context).size.width - 40,
-          decoration: BoxDecoration(
-            boxShadow: context.watch<AppThemeCubit>().state.appTheme == AppTheme.dark
-                ? null
-                : [
-                    BoxShadow(
-                      blurRadius: 3,
-                      color: ui.Color.fromARGB(255, 201, 201, 201),
-                    ),
-                  ],
-            color: context.color.secondaryColor,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: context.color.territoryColor.withOpacity(0.0),
-                            shape: BoxShape.circle,
-                          ),
-                          width: 40,
-                          height: 40,
-                          child: FittedBox(
-                            fit: BoxFit.none,
-                            child: Directionality(
-                              textDirection: Directionality.of(context),
-                              child: RotatedBox(
-                                quarterTurns: Directionality.of(context) == TextDirection.rtl ? 2 : -4,
-                                child: UiUtils.getSvg(AppIcons.arrowLeft),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  CustomText("sendEmail".translate(context)),
-                  const SizedBox(height: 15),
-                  CustomTextFormField(
-                    controller: _subject,
-                    hintText: "subject".translate(context),
-                  ),
-                  const SizedBox(height: 15),
-                  CustomTextFormField(
-                    controller: _email,
-                    isReadOnly: true,
-                    hintText: "companyEmailLbl".translate(context),
-                  ),
-                  const SizedBox(height: 15),
-                  CustomTextFormField(
-                    controller: _text,
-                    maxLine: 100,
-                    hintText: "writeSomething".translate(context),
-                    minLine: 5,
-                  ),
-                  const SizedBox(height: 15),
-                  UiUtils.buildButton(
-                    context,
-                    onPressed: () async {
-                      final Uri emailUri = Uri(
-                        scheme: 'mailto',
-                        path: _email.text,
-                        query: 'subject=${_subject.text}&body=${_text.text}',
-                      );
-                      await launchUrl(emailUri);
-                    },
-                    height: 50,
-                    buttonTitle: "sendEmail".translate(context),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

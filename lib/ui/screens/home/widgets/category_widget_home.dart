@@ -560,33 +560,33 @@ class _StaggeredGridView extends StatelessWidget {
     final crossAxisCount = isDesktop
         ? 16
         : isTablet
-            ? 12
+            ? 10
             : 10;
     final mainAxisSpacing = isDesktop
         ? 3.0
         : isTablet
-            ? 2.0
+            ? 1.0
             : 1.0;
     final crossAxisSpacing = isDesktop
         ? 3.0
         : isTablet
-            ? 2.0
+            ? 1.0
             : 1.0;
     final mainAxisCellCount = isDesktop
-        ? 6
+        ? 4
         : isTablet
-            ? 5
-            : 4;
+            ? 3.5
+            : 3.5;
     final crossAxisCellCount = (int index) => (index % 4 == 0 || index % 4 == 3)
         ? (isDesktop
             ? 10
             : isTablet
-                ? 8
+                ? 7
                 : 7)
         : (isDesktop
             ? 6
             : isTablet
-                ? 4
+                ? 3
                 : 3);
     final leftOffset = (int index) => (index % 4 == 0 || index % 4 == 3)
         ? (isDesktop
@@ -604,54 +604,54 @@ class _StaggeredGridView extends StatelessWidget {
             ? 0.3
             : isTablet
                 ? 0.35
-                : 0.40)
+                : 0.35)
         : (isDesktop
             ? 0.2
             : isTablet
                 ? 0.25
-                : 0.3);
+                : 0.25);
     final widthFactor = (int index) => (index % 4 == 0 || index % 4 == 3)
         ? (isDesktop
             ? 0.7
             : isTablet
-                ? 0.6
-                : 0.5)
+                ? 0.4
+                : 0.4)
         : (isDesktop ? 0.9 : 1.0);
     final heightFactor = (int index) => (index % 4 == 0 || index % 4 == 3)
         ? (isDesktop
-            ? 0.8
+            ? 0.5
             : isTablet
-                ? 0.7
+                ? 0.6
                 : 0.6)
         : (isDesktop
             ? 1.0
             : isTablet
-                ? 0.9
+                ? 0.8
                 : 0.8);
     final fontSize = isDesktop
         ? 16.0
         : isTablet
-            ? 14.0
+            ? 12.0
             : 12.0;
     final paddingHorizontal = isDesktop
         ? 20.0
         : isTablet
-            ? 16.0
+            ? 10.0
             : 10.0;
     final margin = isDesktop
         ? 10.0
         : isTablet
-            ? 8.0
+            ? 6.0
             : 6.0;
     final textPaddingHorizontal = isDesktop
         ? 12.0
         : isTablet
-            ? 10.0
+            ? 8.0
             : 8.0;
     final textPaddingVertical = isDesktop
         ? 6.0
         : isTablet
-            ? 5.0
+            ? 4.0
             : 4.0;
 
     return Padding(
@@ -782,5 +782,5 @@ class _StaggeredGridView extends StatelessWidget {
 }
 
 extension on ColorScheme {
-  get iconColor => null;
+  Null get iconColor => null;
 }

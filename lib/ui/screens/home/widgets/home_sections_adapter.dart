@@ -7,6 +7,7 @@ import 'package:Talab/data/model/home/home_screen_section.dart';
 import 'package:Talab/data/model/item/item_model.dart';
 import 'package:Talab/data/repositories/favourites_repository.dart';
 import 'package:Talab/ui/screens/home/home_screen.dart';
+import 'package:Talab/ui/screens/home/widgets/banner_section_widget.dart';
 import 'package:Talab/ui/screens/home/widgets/grid_list_adapter.dart';
 import 'package:Talab/ui/screens/widgets/promoted_widget.dart';
 import 'package:Talab/ui/theme/theme.dart';
@@ -27,8 +28,7 @@ class HomeSectionsAdapter extends StatelessWidget {
     required this.section,
   });
 
-  // _buildItemCard function (used in style_2)
-  Widget _buildItemCard({
+   Widget _buildItemCard({
     required BuildContext context,
     required ItemModel? item,
     required int index,
@@ -137,7 +137,7 @@ class HomeSectionsAdapter extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                (item?.price ?? 0.0).currencyFormat,
+                                (item?.price ?? 0.0).currencyFormat, // Updated to use currencyFormat
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -199,332 +199,390 @@ class HomeSectionsAdapter extends StatelessWidget {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
-    // Add media queries for style_3 and style_4
+    if (section.filter == 'banner') {
+      return BannerSectionWidget(section: section);
+    }
+
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 600 && screenWidth <= 1200;
     final isDesktop = screenWidth > 1200;
-    final gridHeightStyle3 = isDesktop ? 265.0 : isTablet ? 245.0 : 225.0; // Retained reduced values
+    final gridHeightStyle3 = isDesktop ? 280.0 : isTablet ? 260.0 : 240.0;
     final crossAxisCountStyle3 = isDesktop ? 4 : isTablet ? 3 : 2;
-    final cardWidthStyle3And4 = isDesktop ? 240.0 : isTablet ? 210.0 : 192.0;
-    final listSeparatorWidthStyle4 = isDesktop ? 20.0 : isTablet ? 16.0 : 14.0;
+    final cardWidthStyle3And4 = isDesktop ? 260.0 : isTablet ? 220.0 : 200.0;
+    final listSeparatorWidthStyle4 = isDesktop ? 16.0 : isTablet ? 12.0 : 10.0;
 
-    if (section.style == "style_1") {
-      return section.sectionData!.isNotEmpty
-          ? Container(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
+   if (section.style == "style_1") {
+  return section.sectionData!.isNotEmpty
+      ? Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        Theme.of(context).colorScheme.surface,
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        child: Text(
                           section.title ?? "Trending Items",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                            color: Colors.black87,
-                          ),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.sectionWiseItemsScreen,
-                              arguments: {
-                                "title": section.title,
-                                "sectionId": section.sectionId,
-                              },
-                            );
-                          },
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            Routes.sectionWiseItemsScreen,
+                            arguments: {
+                              "title": section.title,
+                              "sectionId": section.sectionId,
+                            },
+                          );
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           child: Row(
                             children: [
                               Text(
                                 "See All",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.blueAccent,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                      color: Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                               ),
+                              const SizedBox(width: 6),
                               Icon(
                                 Icons.arrow_forward_ios,
                                 size: 14,
-                                color: Colors.blueAccent,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ],
                           ),
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: isDesktop ? 300 : isTablet ? 280 : 260,
+                child: CarouselSlider.builder(
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 4),
+                    autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+                    viewportFraction: isDesktop ? 0.25 : isTablet ? 0.45 : 0.7,
+                    enlargeCenterPage: true,
+                    enlargeFactor: 0.3,
+                    scrollPhysics: const BouncingScrollPhysics(),
+                    enableInfiniteScroll: true,
+                    padEnds: true,
+                  ),
+                  itemCount: section.sectionData?.length ?? 0,
+                  itemBuilder: (context, index, realIndex) {
+                    ItemModel? item = section.sectionData?[index];
+                    return AnimatedOpacity(
+                      opacity: realIndex == index ? 1.0 : 0.8,
+                      duration: const Duration(milliseconds: 300),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            Routes.adDetailsScreen,
+                            arguments: {"model": item},
+                          );
+                        },
+                        child: Container(
+                          width: isDesktop ? 320 : isTablet ? 280 : 240,
+                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Theme.of(context).colorScheme.surface,
+                                Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).shadowColor.withOpacity(0.15),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                                child: Stack(
+                                  children: [
+                                    Image.network(
+                                      item?.image ?? "",
+                                      height: 150,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return Container(
+                                          height: 150,
+                                          color: Theme.of(context).colorScheme.surfaceVariant,
+                                          child: const Center(child: CircularProgressIndicator()),
+                                        );
+                                      },
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          height: 150,
+                                          color: Theme.of(context).colorScheme.surfaceVariant,
+                                          child: const Icon(Icons.image_not_supported, size: 40),
+                                        );
+                                      },
+                                    ),
+                                    Positioned.fill(
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.transparent,
+                                              Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item?.name ?? "Item Name",
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          (item?.price ?? 0.0).currencyFormat,
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context).colorScheme.primary,
+                                              ),
+                                        ),
+                                        AnimatedScale(
+                                          scale: realIndex == index ? 1.0 : 0.9,
+                                          duration: const Duration(milliseconds: 200),
+                                          child: Icon(
+                                            Icons.favorite_border,
+                                            size: 20,
+                                            color: Theme.of(context).colorScheme.error,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        )
+      : const SizedBox.shrink();
+} else if (section.style == "style_2") {
+  return section.sectionData!.isNotEmpty
+      ? Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.6),
+                Theme.of(context).colorScheme.surface,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 5,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.secondary,
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          section.title ?? "Featured Collections",
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                letterSpacing: 0.4,
+                              ),
+                        ),
                       ],
                     ),
-                  ),
-                  Container(
-                    height: 300,
-                    child: CarouselSlider.builder(
-                      options: CarouselOptions(
-                        autoPlay: true,
-                        autoPlayInterval: Duration(seconds: 5),
-                        autoPlayAnimationDuration: Duration(milliseconds: 1500),
-                        viewportFraction: 0.75,
-                        enlargeCenterPage: true,
-                        enlargeFactor: 0.25,
-                        scrollPhysics: BouncingScrollPhysics(),
-                        enableInfiniteScroll: true,
-                      ),
-                      itemCount: section.sectionData?.length ?? 0,
-                      itemBuilder: (context, index, realIndex) {
-                        ItemModel? item = section.sectionData?[index];
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.adDetailsScreen,
-                              arguments: {"model": item},
-                            );
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          Routes.sectionWiseItemsScreen,
+                          arguments: {
+                            "title": section.title,
+                            "sectionId": section.sectionId,
                           },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            margin: EdgeInsets.symmetric(horizontal: 6),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 10,
-                                  spreadRadius: 1,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Image.network(
-                                        item?.image ?? "",
-                                        height: 140,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (context, child, loadingProgress) {
-                                          if (loadingProgress == null) return child;
-                                          return Container(
-                                            height: 140,
-                                            child: Center(
-                                              child: CircularProgressIndicator(),
-                                            ),
-                                          );
-                                        },
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            height: 140,
-                                            color: Colors.grey[200],
-                                            child: Icon(Icons.image_not_supported),
-                                          );
-                                        },
-                                      ),
-                                      Positioned.fill(
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                              colors: [
-                                                Colors.transparent,
-                                                Colors.black.withOpacity(0.2),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item?.name ?? "Item Name",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black87,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      SizedBox(height: 2),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            (item?.price ?? 0.0).currencyFormat,
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.green[700],
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.favorite_border,
-                                            size: 18,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         );
                       },
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : SizedBox.shrink();
-    } else if (section.style == "style_2") {
-      return section.sectionData!.isNotEmpty
-          ? Container(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
                           children: [
-                            Container(
-                              width: 4,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.blueAccent, Colors.purpleAccent],
-                                ),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            SizedBox(width: 8),
                             Text(
-                              section.title ?? "Featured Collections",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black87,
-                                letterSpacing: 0.3,
-                              ),
+                              "Explore",
+                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 18,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ],
                         ),
-                        AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                Routes.sectionWiseItemsScreen,
-                                arguments: {
-                                  "title": section.title,
-                                  "sectionId": section.sectionId,
-                                },
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Explore",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.blueAccent,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                SizedBox(width: 4),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  size: 18,
-                                  color: Colors.blueAccent,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 340,
-                    child: CarouselSlider.builder(
-                      options: CarouselOptions(
-                        autoPlay: false,
-                        viewportFraction: 0.78,
-                        enlargeCenterPage: true,
-                        enlargeFactor: 0.3,
-                        scrollPhysics: BouncingScrollPhysics(),
-                        enableInfiniteScroll: true,
-                        padEnds: true,
                       ),
-                      itemCount: section.sectionData?.length ?? 0,
-                      itemBuilder: (context, index, realIndex) {
-                        ItemModel? item = section.sectionData?[index];
-                        final animation = ModalRoute.of(context)?.animation;
-
-                        return animation != null
-                            ? AnimatedBuilder(
-                                animation: CurvedAnimation(
-                                  parent: animation,
-                                  curve: Curves.easeOut,
-                                ),
-                                builder: (context, child) {
-                                  return _buildItemCard(
-                                    context: context,
-                                    item: item,
-                                    index: index,
-                                    realIndex: realIndex,
-                                    animationValue: animation.value,
-                                  );
-                                },
-                              )
-                            : _buildItemCard(
-                                context: context,
-                                item: item,
-                                index: index,
-                                realIndex: realIndex,
-                                animationValue: 1.0,
-                              );
-                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            )
-          : SizedBox.shrink();
-    } else if (section.style == "style_3") {
+              SizedBox(
+                height: isDesktop ? 340 : isTablet ? 320 : 300,
+                child: CarouselSlider.builder(
+                  options: CarouselOptions(
+                    autoPlay: false,
+                    viewportFraction: isDesktop ? 0.25 : isTablet ? 0.45 : 0.7,
+                    enlargeCenterPage: true,
+                    enlargeFactor: 0.3,
+                    scrollPhysics: const BouncingScrollPhysics(),
+                    enableInfiniteScroll: true,
+                    padEnds: true,
+                    autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  ),
+                  itemCount: section.sectionData?.length ?? 0,
+                  itemBuilder: (context, index, realIndex) {
+                    ItemModel? item = section.sectionData?[index];
+                    final animation = ModalRoute.of(context)?.animation;
+                    return AnimatedOpacity(
+                      opacity: realIndex == index ? 1.0 : 0.8,
+                      duration: const Duration(milliseconds: 300),
+                      child: animation != null
+                          ? AnimatedBuilder(
+                              animation: CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              ),
+                              builder: (context, child) {
+                                return _buildItemCard(
+                                  context: context,
+                                  item: item,
+                                  index: index,
+                                  realIndex: realIndex,
+                                  animationValue: animation.value,
+                                );
+                              },
+                            )
+                          : _buildItemCard(
+                              context: context,
+                              item: item,
+                              index: index,
+                              realIndex: realIndex,
+                              animationValue: 1.0,
+                            ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        )
+      : const SizedBox.shrink();
+} else if (section.style == "style_3") {
       return section.sectionData!.isNotEmpty
           ? SingleChildScrollView(
               child: Column(
@@ -558,7 +616,7 @@ class HomeSectionsAdapter extends StatelessWidget {
                 ],
               ),
             )
-          : SizedBox.shrink();
+          : const SizedBox.shrink();
     } else if (section.style == "style_4") {
       return section.sectionData!.isNotEmpty
           ? SingleChildScrollView(
@@ -596,7 +654,7 @@ class HomeSectionsAdapter extends StatelessWidget {
                 ],
               ),
             )
-          : SizedBox.shrink();
+          : const SizedBox.shrink();
     } else {
       return Container();
     }
@@ -618,34 +676,39 @@ class TitleHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsetsDirectional.only(
-          top: 18, bottom: 0, start: sidePadding, end: sidePadding),
+      padding: const EdgeInsetsDirectional.only(
+          top: 12, bottom: 8, start: sidePadding, end: sidePadding),
       child: Row(
         children: [
           Expanded(
-              flex: 4,
-              child: CustomText(
-                title,
-                fontSize: context.font.large,
-                fontWeight: FontWeight.w600,
-                maxLines: 1,
-              )),
+            flex: 4,
+            child: CustomText(
+              title,
+              fontSize: context.font.large,
+              fontWeight: FontWeight.w600,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           const Spacer(),
           if (!(hideSeeAll ?? false))
             GestureDetector(
-                onTap: onTap,
-                child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 4, vertical: 2.2),
-                    child: CustomText(
-                      "seeAll".translate(context),
-                      fontSize: context.font.smaller + 1,
-                    )))
+              onTap: onTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                child: CustomText(
+                  "seeAll".translate(context),
+                  fontSize: context.font.smaller + 2,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 }
+
 
 class ItemCard extends StatefulWidget {
   final double? width;
@@ -665,7 +728,8 @@ class ItemCard extends StatefulWidget {
 
 class _ItemCardState extends State<ItemCard> {
   double likeButtonSize = 32;
-  double imageHeight = 170;
+  double imageHeight = 147;
+  // Use nullable bool to represent initial state
 
   @override
   void initState() {
@@ -681,7 +745,7 @@ class _ItemCardState extends State<ItemCard> {
         });
       },
       child: Container(
-        width: widget.width ?? 250,
+        width: widget.width ?? 200,
         decoration: BoxDecoration(
           border: Border.all(
             color: context.color.borderColor.darken(30),
@@ -714,12 +778,12 @@ class _ItemCardState extends State<ItemCard> {
                           child: PromotedCard(type: PromoteCardType.icon)),
                   ],
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0), // Reduced from 6.0 to 5.0
+              
+              Padding(
+                    padding: const EdgeInsets.all(12.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         CustomText(
                           (widget.item?.price ?? 0.0).currencyFormat,
@@ -744,7 +808,7 @@ class _ItemCardState extends State<ItemCard> {
                               Expanded(
                                 child: Padding(
                                   padding:
-                                      EdgeInsetsDirectional.only(start: 3.0),
+                                      EdgeInsetsDirectional.only(start: 1.0),
                                   child: CustomText(
                                     widget.item?.address ?? "",
                                     fontSize: (widget.bigCard == true)
@@ -756,12 +820,12 @@ class _ItemCardState extends State<ItemCard> {
                                   ),
                                 ),
                               )
-                            ],
+                           ],
                           ),
                       ],
                     ),
                   ),
-                ),
+           
               ],
             ),
             favButton(),

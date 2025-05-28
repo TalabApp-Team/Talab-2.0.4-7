@@ -19,7 +19,7 @@ import 'package:Talab/utils/ui_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 class HomeSectionsAdapter extends StatelessWidget {
   final HomeScreenSection section;
 
@@ -208,9 +208,9 @@ class HomeSectionsAdapter extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 600 && screenWidth <= 1200;
     final isDesktop = screenWidth > 1200;
-    final gridHeightStyle3 = isDesktop ? 280.0 : isTablet ? 260.0 : 240.0;
-    final crossAxisCountStyle3 = isDesktop ? 4 : isTablet ? 3 : 2;
-    final cardWidthStyle3And4 = isDesktop ? 260.0 : isTablet ? 220.0 : 200.0;
+    final gridHeightStyle3 = isDesktop ? 280.0 : isTablet ? 255.0 : 255.0;
+    final crossAxisCountStyle3 = isDesktop ? 4 : isTablet ? 2 : 2;
+    final cardWidthStyle3And4 = isDesktop ? 260.0 : isTablet ? 240.0 : 240.0;
     final listSeparatorWidthStyle4 = isDesktop ? 16.0 : isTablet ? 12.0 : 10.0;
 
    if (section.style == "style_1") {
@@ -359,14 +359,14 @@ class HomeSectionsAdapter extends StatelessWidget {
                                         if (loadingProgress == null) return child;
                                         return Container(
                                           height: 150,
-                                          color: Theme.of(context).colorScheme.surfaceVariant,
+                                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                           child: const Center(child: CircularProgressIndicator()),
                                         );
                                       },
                                       errorBuilder: (context, error, stackTrace) {
                                         return Container(
                                           height: 150,
-                                          color: Theme.of(context).colorScheme.surfaceVariant,
+                                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                           child: const Icon(Icons.image_not_supported, size: 40),
                                         );
                                       },
@@ -447,7 +447,7 @@ class HomeSectionsAdapter extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.6),
+                Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.6),
                 Theme.of(context).colorScheme.surface,
               ],
               begin: Alignment.topCenter,
@@ -583,41 +583,26 @@ class HomeSectionsAdapter extends StatelessWidget {
         )
       : const SizedBox.shrink();
 } else if (section.style == "style_3") {
-      return section.sectionData!.isNotEmpty
-          ? SingleChildScrollView(
-              child: Column(
-                children: [
-                  TitleHeader(
-                    title: section.title ?? "",
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.sectionWiseItemsScreen,
-                          arguments: {
-                            "title": section.title,
-                            "sectionId": section.sectionId,
-                          });
-                    },
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: gridHeightStyle3),
-                    child: GridListAdapter(
-                      type: ListUiType.Grid,
-                      crossAxisCount: crossAxisCountStyle3,
-                      height: gridHeightStyle3,
-                      builder: (context, int index, bool) {
-                        ItemModel? item = section.sectionData?[index];
-                        return ItemCard(
-                          item: item,
-                          width: cardWidthStyle3And4,
-                        );
-                      },
-                      total: section.sectionData?.length ?? 0,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : const SizedBox.shrink();
-    } else if (section.style == "style_4") {
+  final items = section.sectionData ?? [];
+  return items.isNotEmpty
+    ? MasonryGridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: sidePadding, vertical: 8),
+        gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCountStyle3,
+        ),
+        mainAxisSpacing: 3,
+        crossAxisSpacing: 3,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return ItemCard(
+            item: items[index],
+            width: cardWidthStyle3And4,
+          );
+        },
+      )
+    : const SizedBox.shrink();
+}
+else if (section.style == "style_4") {
       return section.sectionData!.isNotEmpty
           ? SingleChildScrollView(
               child: Column(
@@ -677,7 +662,7 @@ class TitleHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(
-          top: 12, bottom: 8, start: sidePadding, end: sidePadding),
+          top: 5, bottom: 5, start: sidePadding, end: sidePadding),
       child: Row(
         children: [
           Expanded(
@@ -727,113 +712,112 @@ class ItemCard extends StatefulWidget {
 }
 
 class _ItemCardState extends State<ItemCard> {
-  double likeButtonSize = 32;
-  double imageHeight = 147;
-  // Use nullable bool to represent initial state
+  final double likeButtonSize = 32;
+  final double imageHeight    = 165;
 
   @override
   void initState() {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final cardWidth = widget.width ?? 250.0;
+
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, Routes.adDetailsScreen, arguments: {
-          "model": widget.item,
-        });
-      },
+      onTap: () => Navigator.pushNamed(context, Routes.adDetailsScreen, arguments: {"model": widget.item}),
       child: Container(
-        width: widget.width ?? 200,
+        width: cardWidth,
         decoration: BoxDecoration(
-          border: Border.all(
-            color: context.color.borderColor.darken(30),
-            width: 1,
-          ),
-          color: context.color.secondaryColor,
-          borderRadius: BorderRadius.circular(18),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.1),
+              blurRadius: 6,
+              spreadRadius: 1,
+            )
+          ],
         ),
         child: Stack(
           children: [
             Column(
-              mainAxisSize: MainAxisSize.min,
+               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: UiUtils.getImage(
-                        widget.item?.image ?? "",
-                        height: imageHeight,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                // IMAGE
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  child: UiUtils.getImage(
+                    widget.item?.image ?? "",
+                    height: imageHeight,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+         
+            
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                    children: [
+                      CustomText(
+                        widget.item!.name!,
+                        fontSize: context.font.large,
+                        fontWeight: FontWeight.w600,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    if (widget.item?.isFeature ?? false)
-                      const PositionedDirectional(
-                          start: 10,
-                          top: 5,
-                          child: PromotedCard(type: PromoteCardType.icon)),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        (widget.item?.price ?? 0.0).currencyFormat,
+                        style: TextStyle(
+                          fontSize: context.font.small,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      if ((widget.item?.address ?? "").isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            UiUtils.getSvg(AppIcons.location, width: 12, height: 12),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: CustomText(
+                                widget.item!.address!,
+                                fontSize: context.font.smaller,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 2),
+                    ],
+                  ),
                 ),
               
-              Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        CustomText(
-                          (widget.item?.price ?? 0.0).currencyFormat,
-                          fontWeight: FontWeight.bold,
-                          color: context.color.territoryColor,
-                          fontSize: context.font.large,
-                        ),
-                        CustomText(
-                          widget.item!.name!,
-                          fontSize: context.font.large,
-                          maxLines: 1,
-                          firstUpperCaseWidget: true,
-                        ),
-                        if (widget.item?.address != "")
-                          Row(
-                            children: [
-                              UiUtils.getSvg(
-                                AppIcons.location,
-                                width: widget.bigCard == true ? 10 : 8,
-                                height: widget.bigCard == true ? 13 : 11,
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      EdgeInsetsDirectional.only(start: 1.0),
-                                  child: CustomText(
-                                    widget.item?.address ?? "",
-                                    fontSize: (widget.bigCard == true)
-                                        ? context.font.small
-                                        : context.font.smaller,
-                                    color: context.color.textDefaultColor
-                                        .withValues(alpha: 0.5),
-                                    maxLines: 1,
-                                  ),
-                                ),
-                              )
-                           ],
-                          ),
-                      ],
-                    ),
-                  ),
-           
               ],
             ),
-            favButton(),
+
+            // FAVORITE BUTTON
+             favButton(),
+          
           ],
         ),
       ),
     );
   }
+
+  
 
   Widget favButton() {
     bool isLike =
@@ -866,6 +850,7 @@ class _ItemCardState extends State<ItemCard> {
                       }
                     }
                   }),
+
                   builder: (context, state) {
                     return PositionedDirectional(
                       top: imageHeight - (likeButtonSize / 2) - 2,

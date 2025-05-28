@@ -575,8 +575,8 @@ class _StaggeredGridView extends StatelessWidget {
     final mainAxisCellCount = isDesktop
         ? 4
         : isTablet
-            ? 3.5
-            : 3.5;
+            ? 1.5
+            : 3;
     final crossAxisCellCount = (int index) => (index % 4 == 0 || index % 4 == 3)
         ? (isDesktop
             ? 10
